@@ -7,7 +7,7 @@ const generateToken = (id) => {
   });
 };
 
-export const createUser = async(req, res) => {
+export const register = async(req, res) => {
     try {
         const {name, email, password} = req.body;
 
@@ -46,7 +46,7 @@ export const createUser = async(req, res) => {
     }
 };
 
-export const loginUser = async (req, res) => {
+export const login = async (req, res) => {
     try {
         const { email, password } = req.body;
 
@@ -62,6 +62,7 @@ export const loginUser = async (req, res) => {
                 message: "Invalid email or password.",
             });
         }
+        console.log(error);
 
         const isMatch = await user.comparePassword(password);
 
