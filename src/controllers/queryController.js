@@ -1,5 +1,5 @@
-import Query from "../models/Query.js";
-import File from "../models/File.js";
+import Query from "../models/query.js";
+import File from "../models/file.js";
 
 const createQuery = async (req, res, next) => {
   try {
@@ -11,7 +11,7 @@ const createQuery = async (req, res, next) => {
         message: "Please provide both fileId and question.",
       });
     }
-    
+
     const file = await File.findOne({ _id: fileId, userId: req.user._id });
     if (!file) {
       return res.status(404).json({

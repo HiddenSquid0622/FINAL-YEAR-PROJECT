@@ -1,4 +1,4 @@
-import File from "../models/File.js";
+import File from "../models/file.js";
 const uploadFile = async (req, res, next) => {
   try {
     
