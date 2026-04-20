@@ -1,4 +1,11 @@
-import { User } from "../models/user.model.js";
+import jwt from "jsonwebtoken";
+import { User } from "../models/user.model.js"; 
+
+const generateToken = (id) => {
+  return jwt.sign({ id }, process.env.JWT_SECRET, {
+    expiresIn: process.env.JWT_EXPIRES_IN || "7d",
+  });
+};
 
 export const createUser = async(req, res) => {
     try {
@@ -20,14 +27,67 @@ export const createUser = async(req, res) => {
             email, 
             password,
         });
+        const token = generateToken(user._id);
 
-        await user.save();
-
-        return res.status(201)
-        .json({ message: " User created successfully" , user});
-        
-    } catch (error) {
-        return res.status(500)
-         .json({ message: "Internal Server Error" , error: error.message});
+    res.status(201).json({
+        success: true,
+        message: "User registered successfully.",
+        data: {
+            token,
+            user: {
+                id: user._id,
+                name: user.name,
+                email: user.email,
+            },
+        },
+    });
+    }catch (error) {
+        next(error);
     }
-}
+};
+
+export const loginUser = async (req, res) => {
+    try {
+        const { email, password } = req.body;
+
+        if (!email || !password) {
+            return res.status(400)
+                .json({ message: "Please enter email and password for login" });
+        } 
+
+        const user = await User.findOne({ email }).select("+password");
+        if (!user) {
+            return res.status(401).json({
+                success: false,
+                message: "Invalid email or password.",
+            });
+        }
+
+        const isMatch = await user.comparePassword(password);
+
+        if (!isMatch) {
+            return res.status(401).json({
+                success: false,
+                message: "Invalid email or password.",
+            });
+        }
+
+        const token = generateToken(user._id);
+
+        return res.status(200).json({
+            success: true,
+            message: "User logged in successfully.",
+            data: {
+                token,
+                user: {
+                    id: user._id,
+                    name: user.name,
+                    email: user.email,
+                },
+            },
+
+        });
+    } catch (error) {
+    next(error);
+  }
+};
