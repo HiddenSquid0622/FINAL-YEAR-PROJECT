@@ -1,0 +1,9 @@
+Flask
+python-dotenv
+pdfminer.six
+python-docx
+google-generativeai
+numpy
+scikit-learn
+gunicorn
+Django
